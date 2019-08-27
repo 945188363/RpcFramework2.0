@@ -1,5 +1,5 @@
 # RpcFramework2.0
-It's a big step for my RPC framework. Last time , i pushed a RPC framework that used SOCKET to Listen query and JDK Proxy to proxy class. But this time, i bring a band new RPC framework here!
+It's a big step for my RPC framework. Last time , i pushed a RPC framework that used SOCKET to Listen query and JDK Proxy to proxy class. But this time, i bring a brand new RPC framework here!
 
 
 The RpcFramework2.0 contains two REGISTRY---local register AND remote register.
