@@ -1,7 +1,13 @@
 package com.njh.rpc.RpcServer.Server.Framework;
 
 import java.io.Serializable;
-
+/**
+ * @Author njh
+ * @Description URL类
+ * @Date 13:32，
+ * @Param
+ * @return
+ **/
 public class URL implements Serializable {
     private String hostname;
     private int port;

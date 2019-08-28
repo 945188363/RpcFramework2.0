@@ -1,7 +1,13 @@
 package com.njh.rpc.RpcServer.Server.Framework;
 
 import java.io.Serializable;
-
+/**
+ * @Author njh
+ * @Description 消息类
+ * @Date 13:32,
+ * @Param
+ * @return
+ **/
 public class Invocation implements Serializable {
     private String interfaceName;
     private String methodNmae;

@@ -12,9 +12,10 @@ import com.njh.rpc.RpcServer.Server.Protocol.Http.HttpProtocol;
  **/
 public class ProtocolFactory{
     public static Protocol getProtocol(){
-        //工厂模式
+        //工厂模式默认是http请求
         String name  = System.getProperty("protocolName");
         if(name == null || name.equals("")) name =" http";
+        //新增协议可以在这里加
         switch(name){
             case "http":
                 return new HttpProtocol();

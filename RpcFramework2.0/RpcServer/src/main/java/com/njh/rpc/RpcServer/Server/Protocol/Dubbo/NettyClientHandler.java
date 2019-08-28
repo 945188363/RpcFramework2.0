@@ -5,7 +5,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.concurrent.Callable;
-
+/**
+ * @Author njh
+ * @Description 实现Callable接口来创建多线程
+ * @Date 13:35,
+ * @Param
+ * @return
+ **/
 public class NettyClientHandler  extends ChannelInboundHandlerAdapter implements Callable{ //ChannelInboundHandlerAdapter不会在channelRead结束时释放资源
     private ChannelHandlerContext context;
     private String result;
