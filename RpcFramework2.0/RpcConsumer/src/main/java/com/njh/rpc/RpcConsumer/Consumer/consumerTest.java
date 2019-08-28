@@ -1,9 +1,7 @@
 package com.njh.rpc.RpcConsumer.Consumer;
 
 import com.njh.rpc.RpcApi.API.HelloWorld;
-import com.njh.rpc.RpcServer.Server.Framework.Invocation;
 import com.njh.rpc.RpcServer.Server.Framework.ProxyFactory;
-import com.njh.rpc.RpcServer.Server.Protocol.Http.HttpClient;
 
 /**
  * ClassName: consumerTest
@@ -15,7 +13,8 @@ import com.njh.rpc.RpcServer.Server.Protocol.Http.HttpClient;
 public class consumerTest{
     public static void main(String[] args) throws Exception{
         //http协议调用-代理工厂类
-        HelloWorld helloWorld = ProxyFactory.getProxy(HelloWorld.class);
+        HelloWorld helloWorld = ProxyFactory.getProxy(HelloWorld.class,"http");//httpp协议
+        //HelloWorld helloWorld1 = ProxyFactory.getProxy(HelloWorld.class,"dubbo");//dubbo协议
 
         System.out.println(helloWorld.sayHi("njh"));
 

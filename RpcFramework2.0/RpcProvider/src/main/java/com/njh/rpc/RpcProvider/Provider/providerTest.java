@@ -2,8 +2,9 @@ package com.njh.rpc.RpcProvider.Provider;
 
 import com.njh.rpc.RpcApi.API.HelloWorld;
 import com.njh.rpc.RpcProvider.Provider.Impl.HelloWorldImpl;
+import com.njh.rpc.RpcServer.Server.Framework.Protocol;
 import com.njh.rpc.RpcServer.Server.Framework.URL;
-import com.njh.rpc.RpcServer.Server.Protocol.Http.HttpServer;
+import com.njh.rpc.RpcServer.Server.Protocol.Http.HttpProtocol;
 import com.njh.rpc.RpcServer.Server.Registry.LocalRegister;
 import com.njh.rpc.RpcServer.Server.Registry.RemoteRegister;
 
@@ -23,9 +24,21 @@ public class providerTest{
         URL url = new URL("localhost",8080);
         RemoteRegister.register(HelloWorld.class.getName(),url);
 
+//        //3.开启Tomcat的http服务器
+//        HttpServer httpServer = new HttpServer();
+//        httpServer.start("localhost",8080);
+//
+//        //4.开启Netty的dubbo服务器
+//        NettyServer nettyServer = new NettyServer();
+//        nettyServer.start(url);
+
         //3.开启Tomcat的http服务器
-        HttpServer httpServer = new HttpServer();
-        httpServer.start("localhost",8080);
+        Protocol protocol = new HttpProtocol();
+        protocol.start(url);
+
+//        //4.开启Netty的dubbo服务器
+//        Protocol protocol1 = new DubboProtocol();
+//        protocol1.start(url);
 
     }
 }

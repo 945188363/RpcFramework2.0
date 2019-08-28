@@ -1,6 +1,7 @@
 package com.njh.rpc.RpcServer.Server.Protocol.Dubbo;
 
 
+import com.njh.rpc.RpcServer.Server.Framework.URL;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -10,20 +11,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class NettyServer {
-    private int port;
-    private String ip;
-
-    public NettyServer(String ip, int port){
-        this.ip=ip;
-        this.port=port;
-        start();
-    }
-
-    public void start(){
+    public void start(URL url){
         int process = Runtime.getRuntime().availableProcessors();
         EventLoopGroup worker = new NioEventLoopGroup();
         EventLoopGroup boss = new NioEventLoopGroup(process);
@@ -35,27 +28,28 @@ public class NettyServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
-                                    .addLast("inboundDecoder",new HttpRequestDecoder())
-                                    .addLast("outboundEncoder",new HttpResponseEncoder())
+                                    .addLast("decoder",new ObjectDecoder(ClassResolvers
+                                            .weakCachingConcurrentResolver(this.getClass()
+                                                    .getClassLoader())))
+                                    .addLast("encoder",new ObjectEncoder())
                                     .addLast("inboundAggregator",new HttpObjectAggregator(50*1024*1024))
-                                    .addLast("inboundHandler",new NettyServerHandler());
+                                    .addLast("handler",new NettyServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG,1024)
                     .childOption(ChannelOption.SO_KEEPALIVE,true);
-
-            ChannelFuture future = serverBootstrap.bind(ip,port).sync();
-            System.out.println(("Server started in ip: " + ip + "  port: " + port + "."));
+            //绑定ip,端口
+            ChannelFuture future = serverBootstrap.bind(url.getHostname(),url.getPort()).sync();
+            //启动
+            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            //释放资源
             worker.shutdownGracefully();
             boss.shutdownGracefully();
         }
 
     }
 
-    public static void main(String[] args) {
-        new NettyServer("localhost", 6688);
-    }
 }

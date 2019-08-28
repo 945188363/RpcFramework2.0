@@ -1,65 +1,26 @@
 package com.njh.rpc.RpcServer.Server.Protocol.Dubbo;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.njh.rpc.RpcServer.Server.Framework.Invocation;
+import com.njh.rpc.RpcServer.Server.Registry.LocalRegister;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 
-public class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {  //调用ChannelRead0退出时会自动释放资源，而ChannelInboundHandlerAdapter不会
-
+public class NettyServerHandler extends ChannelInboundHandlerAdapter{  //ChannelInboundHandlerAdapter不会在channelRead结束时释放资源
     @Override
-    public void channelActive(ChannelHandlerContext channelHandlerContext) throws Exception {
-        //发送信息
-        channelHandlerContext.writeAndFlush(getSendByteBuf("服务端发往客户端的数据------"));
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws UnsupportedEncodingException, IOException {
+    public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception{
         //do something with msg, for example
-        ByteBuf m = fullHttpRequest.content();
-        String content = getMessage(m);
-        //do something with content
-        System.out.println("接收数据------" + content);
+        Invocation invocation = (Invocation)msg;
+        Class serviceImpl = LocalRegister.get(invocation.getInterfaceName());
 
-        DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer("some_body_content".getBytes()));
-        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/plain");
-        channelHandlerContext.writeAndFlush(response);
+        Method method = serviceImpl.getMethod(invocation.getMethodNmae(),invocation.getParamTypes());
 
-    }
+        Object result = method.invoke(serviceImpl.newInstance(),invocation.getParams());
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable cause) {
-        System.out.println("Exception caught in netty channel."+cause);
-        channelHandlerContext.close();
-    }
+        System.out.println("Netty------"+result.toString());
+        channelHandlerContext.writeAndFlush(result);
 
-    /*
-     * 将字节UTF-8编码返回字符串
-     */
-    private String getMessage (ByteBuf buf){
-        byte[] con = new byte[buf.readableBytes()];
-        buf.readBytes(con);
-        try {
-            return new String(con, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /*
-     * 将Sting转化为UTF-8编码的字节
-     */
-    private ByteBuf getSendByteBuf (String message) throws UnsupportedEncodingException {
-        byte[] req = message.getBytes("UTF-8");
-        ByteBuf pingMessage = Unpooled.buffer();
-        pingMessage.writeBytes(req);
-        return pingMessage;
     }
 
 }
