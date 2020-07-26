@@ -8,7 +8,7 @@ import java.lang.reflect.Proxy;
 
 public class ProxyFactory {
     //代理类工厂
-    public static <T> T getProxy(final Class interfaceClass/*,final String protocol*/){
+    public static <T> T getProxy(final Class interfaceClass,final String protocol){
         return  (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] {interfaceClass}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {

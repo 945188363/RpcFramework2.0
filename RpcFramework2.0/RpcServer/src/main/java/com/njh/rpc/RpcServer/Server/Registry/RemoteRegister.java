@@ -20,7 +20,7 @@ public class RemoteRegister {
     }
 
     //负载均衡--随机
-    public static URL random(String interfaceName){
+    public static URL random(String interfaceName){ 
         map = getFile();
 
         List<URL> list = map.get(interfaceName);
